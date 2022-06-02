@@ -1,0 +1,8 @@
+.idea/
+dist/
+public/env.json
+node_modules/
+.gitignore
+.prettierrc.json
+Dockerfile
+README.md
