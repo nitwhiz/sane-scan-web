@@ -5,17 +5,10 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import useScanner from '../composables/useScanner';
+<script lang="ts" setup>
+import { useScanner } from '../composables/useScanner';
 
-export default defineComponent({
-  setup() {
-    const { scanObjectUrl } = useScanner();
-
-    return { scanObjectUrl };
-  },
-});
+const { scanObjectUrl } = useScanner();
 </script>
 
 <style scoped lang="scss">

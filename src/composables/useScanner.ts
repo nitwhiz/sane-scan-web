@@ -1,5 +1,11 @@
 import { ScanApi, ScanRequest } from '../common/ScanApi';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useEnvironment } from './useEnvironment';
+
+const api = ref(null as ScanApi | null);
+const apiAvailable = computed(() => api.value !== null);
+
+const lastError = ref(null as string | null);
 
 const isScanning = ref(false);
 
@@ -10,24 +16,16 @@ const requestSettings = ref({
 } as ScanRequest);
 
 const scanObjectUrl = ref('');
-const lastError = ref(null as string | null);
+const scanObjectBlob = ref(null as Blob | null);
+const scanFormat = ref('');
 
-let api: ScanApi | null = null;
+const { env } = useEnvironment();
 
-fetch('/env.json')
-  .then((response) => {
-    return response.json() as Promise<{ saneScanApiUrl: string }>;
-  })
-  .then((json) => {
-    if (!json.saneScanApiUrl) {
-      throw new Error('`saneScanApiUrl` not found in json');
-    }
-
-    api = new ScanApi(json.saneScanApiUrl);
-  })
-  .catch((reason) => {
-    lastError.value = `unable to read web env: ${reason}`;
-  });
+env.then((env) => {
+  if (env.saneScanApiUrl) {
+    api.value = new ScanApi(env.saneScanApiUrl);
+  }
+});
 
 const scan = () => {
   if (isScanning.value) {
@@ -37,20 +35,24 @@ const scan = () => {
   }
 
   isScanning.value = true;
+  scanFormat.value = requestSettings.value.format;
 
   if (scanObjectUrl.value !== '') {
     URL.revokeObjectURL(scanObjectUrl.value);
   }
 
   scanObjectUrl.value = '';
+  scanObjectBlob.value = null;
   lastError.value = null;
 
-  return api?.scan(requestSettings.value).then((res) => {
+  return api.value?.scan(requestSettings.value).then((res) => {
     lastError.value = res.errorMessage || null;
 
     if (res.success && res.body !== null) {
+      scanObjectBlob.value = res.body;
       scanObjectUrl.value = URL.createObjectURL(res.body);
     } else {
+      scanObjectBlob.value = null;
       scanObjectUrl.value = '';
     }
 
@@ -58,14 +60,15 @@ const scan = () => {
   });
 };
 
-const useScanner = () => {
+export const useScanner = () => {
   return {
+    apiAvailable,
     isScanning,
     requestSettings,
     scanObjectUrl,
+    scanObjectBlob,
     lastError,
+    scanFormat,
     scan,
   };
 };
-
-export default useScanner;
