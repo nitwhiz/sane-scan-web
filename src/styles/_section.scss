@@ -1,0 +1,39 @@
+.section {
+  border-bottom: 1px solid #444;
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  h3 {
+    font-size: 18px;
+    margin: 16px 0;
+    text-transform: uppercase;
+    color: #aaa;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .buttons {
+    display: flex;
+
+    flex-direction: row;
+    justify-content: space-between;
+
+    margin-top: 18px;
+
+    .button {
+      margin-right: 8px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
