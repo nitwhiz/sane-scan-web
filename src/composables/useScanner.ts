@@ -1,5 +1,5 @@
 import { ScanApi, ScanRequest } from '../common/ScanApi';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useEnvironment } from './useEnvironment';
 
 const api = ref(null as ScanApi | null);
@@ -19,6 +19,24 @@ const scanObjectUrl = ref('');
 const scanObjectBlob = ref(null as Blob | null);
 const scanFormat = ref('');
 
+watch(
+  scanObjectBlob,
+  (newBlob, prevBlob) => {
+    if (scanObjectUrl.value && scanObjectUrl.value) {
+      URL.revokeObjectURL(scanObjectUrl.value);
+
+      scanObjectUrl.value = '';
+    }
+
+    if (newBlob) {
+      scanObjectUrl.value = URL.createObjectURL(newBlob);
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
 const { env } = useEnvironment();
 
 env.then((env) => {
@@ -37,11 +55,6 @@ const scan = () => {
   isScanning.value = true;
   scanFormat.value = requestSettings.value.format;
 
-  if (scanObjectUrl.value !== '') {
-    URL.revokeObjectURL(scanObjectUrl.value);
-  }
-
-  scanObjectUrl.value = '';
   scanObjectBlob.value = null;
   lastError.value = null;
 
@@ -50,10 +63,8 @@ const scan = () => {
 
     if (res.success && res.body !== null) {
       scanObjectBlob.value = res.body;
-      scanObjectUrl.value = URL.createObjectURL(res.body);
     } else {
       scanObjectBlob.value = null;
-      scanObjectUrl.value = '';
     }
 
     isScanning.value = false;

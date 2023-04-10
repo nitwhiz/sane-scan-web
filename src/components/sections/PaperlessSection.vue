@@ -8,7 +8,7 @@
     <div class="buttons">
       <Button
         :label="uploadLabel"
-        :enabled="!isUploading && !isScanning"
+        :enabled="!isUploading && !isScanning && !isImageEditorProcessing"
         @click="startStagecoachUpload"
         :progress="uploadProgress"
       />
@@ -22,9 +22,9 @@ import Button from '../Button.vue';
 import { computed, ref } from 'vue';
 import { useScanner } from '../../composables/useScanner';
 import { useStagecoach } from '../../composables/useStagecoach';
+import { useScanImageEditor } from '../../composables/useScanImageEditor';
 
 const { isScanning, lastError: scannerError, scanObjectBlob, scanFormat } = useScanner();
-
 const {
   apiToken: stagecoachApiToken,
   lastError: stagecoachError,
@@ -32,6 +32,7 @@ const {
   uploadProgress,
   upload,
 } = useStagecoach();
+const { isProcessing: isImageEditorProcessing } = useScanImageEditor();
 
 const fileName = ref('');
 
