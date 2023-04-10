@@ -26,7 +26,7 @@ export class ScanApi {
   }
 
   public static getAvailableFormats(): ScanFormat[] {
-    return ['pnm', 'png', 'tiff', 'jpeg'];
+    return ['png', 'jpeg'];
   }
 
   public static getAvailableResolutions(): ScanResolution[] {

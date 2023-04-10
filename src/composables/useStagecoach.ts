@@ -38,8 +38,6 @@ const upload = (doc: Blob, options: UploadDocumentOptions) => {
     .then((res) => {
       lastError.value = res.errorMessage || null;
 
-      console.log('success:', res.success);
-
       isUploading.value = false;
       uploadProgress.value = 1;
     });

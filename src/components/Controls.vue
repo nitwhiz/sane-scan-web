@@ -4,6 +4,7 @@
       <div v-for="e in lastErrors">{{ e }}</div>
     </div>
     <ScanSection v-if="scannerEnabled" />
+    <ScanEditSection v-if="scanEditEnabled" />
     <PaperlessSection v-if="stagecoachEnabled" />
   </aside>
 </template>
@@ -14,9 +15,12 @@ import { useStagecoach } from '../composables/useStagecoach';
 import { computed } from 'vue';
 import ScanSection from './sections/ScanSection.vue';
 import PaperlessSection from './sections/PaperlessSection.vue';
+import ScanEditSection from './sections/ScanEditSection.vue';
 
-const { apiAvailable: scannerEnabled, lastError: scannerError } = useScanner();
+const { apiAvailable: scannerEnabled, lastError: scannerError, scanObjectBlob } = useScanner();
 const { apiAvailable: stagecoachEnabled, lastError: stagecoachError } = useStagecoach();
+
+const scanEditEnabled = computed(() => scanObjectBlob.value !== null);
 
 const lastErrors = computed(() => [scannerError.value, stagecoachError.value].filter((e) => e));
 </script>

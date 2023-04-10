@@ -12,7 +12,7 @@
     <div class="buttons">
       <Button
         :label="isScanning ? 'Scanning ...' : 'Start Scan'"
-        :enabled="!isUploading && !isScanning"
+        :enabled="!isUploading && !isScanning && !isImageEditorProcessing"
         @click="startScan"
         :progress="isScanning ? -1 : 1"
       />
@@ -28,10 +28,11 @@ import { useScanner } from '../../composables/useScanner';
 import { ScanApi } from '../../common/ScanApi';
 import { computed, nextTick, ref } from 'vue';
 import { useStagecoach } from '../../composables/useStagecoach';
+import { useScanImageEditor } from '../../composables/useScanImageEditor';
 
 const { scan, isScanning, lastError: scannerError, scanObjectUrl, requestSettings, scanFormat } = useScanner();
-
 const { isUploading, lastError: stagecoachError } = useStagecoach();
+const { isProcessing: isImageEditorProcessing } = useScanImageEditor();
 
 const formats = ScanApi.getAvailableFormats().map((f) => ({
   label: f.toUpperCase(),
@@ -48,7 +49,9 @@ const modi = ScanApi.getAvailableModi().map((m) => ({
   value: m,
 }));
 
-const canDownload = computed(() => scanObjectUrl.value !== '' && !isScanning.value && !scannerError.value);
+const canDownload = computed(
+  () => !isImageEditorProcessing.value && scanObjectUrl.value !== '' && !isScanning.value && !scannerError.value,
+);
 
 const downloadTime = ref('1970-01-01_00-00-00');
 
