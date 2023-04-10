@@ -11,12 +11,20 @@
     </div>
     <div class="buttons">
       <Button
-        :label="isScanning ? 'Scanning ...' : 'Start Scan'"
-        :enabled="!isUploading && !isScanning && !isImageEditorProcessing"
-        @click="startScan"
+        :label="isScanning ? 'Scanning ...' : 'New Scan'"
+        :enabled="!isGotenbergRunning && !isStagecoachUploading && !isScanning && !isImageEditorProcessing"
+        @click="() => startScan(false)"
         :progress="isScanning ? -1 : 1"
       />
       <Button type="secondary" label="Download" :enabled="canDownload" @click="download" />
+    </div>
+    <div class="buttons">
+      <Button
+        :label="isScanning ? 'Scanning ...' : `Add Scan (${multiScanCount})`"
+        :enabled="!isGotenbergRunning && !isStagecoachUploading && !isScanning && !isImageEditorProcessing"
+        @click="() => startScan(true)"
+        :progress="isScanning ? -1 : 1"
+      />
     </div>
   </div>
 </template>
@@ -29,10 +37,24 @@ import { ScanApi } from '../../common/ScanApi';
 import { computed, nextTick, ref } from 'vue';
 import { useStagecoach } from '../../composables/useStagecoach';
 import { useScanImageEditor } from '../../composables/useScanImageEditor';
+import { useGotenberg } from '../../composables/useGotenberg';
 
-const { scan, isScanning, lastError: scannerError, scanObjectUrl, requestSettings, scanFormat } = useScanner();
-const { isUploading, lastError: stagecoachError } = useStagecoach();
+const {
+  scan,
+  isScanning,
+  lastError: scannerError,
+  scanObjectUrl,
+  requestSettings,
+  scanFormat,
+  multiScanManager,
+} = useScanner();
+const { isUploading: isStagecoachUploading, lastError: stagecoachError } = useStagecoach();
 const { isProcessing: isImageEditorProcessing } = useScanImageEditor();
+const { isRunning: isGotenbergRunning } = useGotenberg();
+
+const multiScanCount = ref(0);
+
+multiScanManager.on('update', (blobs) => (multiScanCount.value = blobs.length));
 
 const formats = ScanApi.getAvailableFormats().map((f) => ({
   label: f.toUpperCase(),
@@ -59,13 +81,13 @@ const downloadFilename = computed(
   () => `scan_${requestSettings.value.resolution}_${downloadTime.value}.${requestSettings.value.format}`,
 );
 
-const startScan = () => {
+const startScan = (isMulti: boolean) => {
   scannerError.value = null;
   stagecoachError.value = null;
 
   scanFormat.value = requestSettings.value.format;
 
-  scan();
+  scan(isMulti);
 };
 
 const downloadAnchor = ref(null as null | HTMLAnchorElement);

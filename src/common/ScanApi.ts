@@ -17,7 +17,7 @@ export interface ScanResult {
 }
 
 export class ScanApi {
-  private axios: Axios;
+  private readonly axios: Axios;
 
   constructor(baseUrl: string) {
     this.axios = axios.create({
@@ -44,7 +44,7 @@ export class ScanApi {
           ...req,
         },
         responseType: 'blob',
-        timeout: 30000,
+        timeout: 600000,
       })
       .then(({ data }) => ({
         success: true,

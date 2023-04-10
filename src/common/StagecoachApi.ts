@@ -10,7 +10,7 @@ export interface UploadDocumentResult {
 }
 
 export class StagecoachApi {
-  private axios: Axios;
+  private readonly axios: Axios;
 
   private token: string = '';
 

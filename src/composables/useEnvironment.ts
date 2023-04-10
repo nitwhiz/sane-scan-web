@@ -3,6 +3,7 @@ import axios from 'axios';
 export interface Environment {
   saneScanApiUrl: string;
   stagecoachApiUrl: string;
+  gotenbergApiUrl: string;
 }
 
 const environmentPromise: Promise<Environment> = axios
@@ -14,6 +15,7 @@ const environmentPromise: Promise<Environment> = axios
     return {
       stagecoachApiUrl: '',
       saneScanApiUrl: '',
+      gotenbergApiUrl: '',
     };
   });
 
