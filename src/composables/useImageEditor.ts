@@ -1,7 +1,11 @@
 import { Ref, ref, watch } from 'vue';
 import { BlobType, ImageEditor, RotationDirection } from '../common/ImageEditor';
 
-export const useImageEditor = (imageBlob: Ref<Blob | null>, imageFormat: Ref<string>) => {
+export const useImageEditor = (
+  imageBlob: Ref<Blob | null>,
+  imageFormat: Ref<string>,
+  updateCallback: (newBlob: Blob, format: string) => void,
+) => {
   const imageEditorPromise = ref(Promise.resolve(new ImageEditor()));
 
   const isProcessing = ref(false);
@@ -10,7 +14,12 @@ export const useImageEditor = (imageBlob: Ref<Blob | null>, imageFormat: Ref<str
     imageBlob,
     (newBlob) => {
       if (newBlob) {
-        imageEditorPromise.value = imageEditorPromise.value.then((imageEditor) => imageEditor.loadImage(newBlob));
+        imageEditorPromise.value = imageEditorPromise.value
+          .then((imageEditor) => imageEditor.loadImage(newBlob))
+          .then((imageEditor) => {
+            window.setTimeout(() => updateCallback(newBlob, imageFormat.value), 0);
+            return imageEditor;
+          });
       }
     },
     {

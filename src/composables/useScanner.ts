@@ -1,6 +1,10 @@
 import { ScanApi, ScanRequest } from '../common/ScanApi';
 import { computed, ref, watch } from 'vue';
 import { useEnvironment } from './useEnvironment';
+import { MultiScanManager } from '../common/MultiScanManager';
+
+const multiScanManager = new MultiScanManager();
+const multiScanIndex = ref(0);
 
 const api = ref(null as ScanApi | null);
 const apiAvailable = computed(() => api.value !== null);
@@ -21,8 +25,8 @@ const scanFormat = ref('');
 
 watch(
   scanObjectBlob,
-  (newBlob, prevBlob) => {
-    if (scanObjectUrl.value && scanObjectUrl.value) {
+  (newBlob) => {
+    if (scanObjectUrl.value) {
       URL.revokeObjectURL(scanObjectUrl.value);
 
       scanObjectUrl.value = '';
@@ -45,7 +49,7 @@ env.then((env) => {
   }
 });
 
-const scan = () => {
+const scan = (addPage: boolean = false) => {
   if (isScanning.value) {
     lastError.value = 'scanner is already running';
 
@@ -58,11 +62,19 @@ const scan = () => {
   scanObjectBlob.value = null;
   lastError.value = null;
 
+  if (!addPage) {
+    multiScanManager.clear();
+    multiScanIndex.value = 0;
+  }
+
   return api.value?.scan(requestSettings.value).then((res) => {
     lastError.value = res.errorMessage || null;
 
     if (res.success && res.body !== null) {
       scanObjectBlob.value = res.body;
+
+      ++multiScanIndex.value;
+      multiScanManager.put(multiScanIndex.value, res.body, requestSettings.value.format);
     } else {
       scanObjectBlob.value = null;
     }
@@ -81,5 +93,7 @@ export const useScanner = () => {
     lastError,
     scanFormat,
     scan,
+    multiScanManager,
+    multiScanIndex,
   };
 };
