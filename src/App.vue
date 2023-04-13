@@ -5,17 +5,9 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
 import Preview from './components/Preview.vue';
 import Controls from './components/Controls.vue';
-
-export default defineComponent({
-  components: {
-    Preview,
-    Controls,
-  },
-});
 </script>
 
 <style lang="scss">

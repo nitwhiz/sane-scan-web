@@ -7,7 +7,9 @@ export interface Environment {
 }
 
 const environmentPromise: Promise<Environment> = axios
-  .get<Environment>('/env.json')
+  .get<Environment>('/env.json', {
+    responseType: 'json',
+  })
   .then(({ data }) => data)
   .catch((reason) => {
     console.error('failed to fetch environment', reason);
