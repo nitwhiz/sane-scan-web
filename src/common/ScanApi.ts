@@ -8,6 +8,7 @@ export interface ScanRequest {
   format: ScanFormat;
   resolution: ScanResolution;
   mode: ScanMode;
+  gamma: number;
 }
 
 export interface ScanResult {

@@ -11,7 +11,7 @@
 interface Props {
   modelValue: number | string;
   label: string;
-  type?: 'text' | 'password';
+  type?: 'text' | 'password' | 'number';
 }
 
 interface Emits {

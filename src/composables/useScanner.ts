@@ -17,6 +17,7 @@ const requestSettings = ref({
   format: 'png',
   resolution: 300,
   mode: 'color',
+  gamma: 1.6,
 } as ScanRequest);
 
 const scanObjectUrl = ref('');

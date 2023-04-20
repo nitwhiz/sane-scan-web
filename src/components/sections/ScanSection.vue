@@ -8,6 +8,7 @@
       <DropdownControl label="Format" :options="formats" v-model="requestSettings.format" />
       <DropdownControl label="Resolution" :options="resolutions" v-model="requestSettings.resolution" />
       <DropdownControl label="Mode" :options="modi" v-model="requestSettings.mode" />
+      <InputControl label="Gamma" type="number" v-model="requestSettings.gamma" />
     </div>
     <div class="buttons">
       <Button
@@ -38,6 +39,7 @@ import { computed, nextTick, ref } from 'vue';
 import { useStagecoach } from '../../composables/useStagecoach';
 import { useScanImageEditor } from '../../composables/useScanImageEditor';
 import { useGotenberg } from '../../composables/useGotenberg';
+import InputControl from '../InputControl.vue';
 
 const {
   scan,
